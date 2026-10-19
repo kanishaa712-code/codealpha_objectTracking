@@ -254,29 +254,3 @@ Tested in a development sandbox without PyTorch, a camera or internet: the 11 au
 
 ---
 
-## Upload to GitHub
-
-1. Create an **empty** repository named `CodeAlpha_ObjectDetectionTracking` on <https://github.com/new> (no README / .gitignore / licence, since they already exist here).
-2. In the project folder:
-
-```bash
-git init
-git add .
-git status              # check: no .pt model files, no videos, no .venv listed
-git commit -m "VisionTrack AI: YOLO object detection and tracking web app"
-git branch -M main
-git remote add origin https://github.com/<your-username>/CodeAlpha_ObjectDetectionTracking.git
-git push -u origin main
-```
-
-The `.gitignore` keeps model weights, videos and the virtual environment out of the repository. If GitHub asks for a password, use a [personal access token](https://github.com/settings/tokens) or sign in with the GitHub CLI (`gh auth login`).
-
-Suggested extras before submitting: add a screenshot of your running app to the README, and record a short demo video.
-
----
-
-## Customising
-
-- **Add a model:** put the `.pt` file in `models/` and add its name to `AVAILABLE_MODELS` in `config.py`. Object presets assume COCO class numbers, so custom-trained models need their own `CLASS_PRESETS`.
-- **Change the object groups:** edit `CLASS_PRESETS` in `config.py` (COCO class IDs: <https://docs.ultralytics.com/datasets/detect/coco/>).
-- **Tune the tracker:** copy `bytetrack.yaml` from the Ultralytics package, edit values such as `track_buffer` (how long a lost object is remembered), and pass its path as the `tracker` value.
