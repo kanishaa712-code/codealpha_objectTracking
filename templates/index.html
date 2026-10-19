@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VisionTrack AI – object detection and tracking</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <path d="M4 14V4h10M26 4h10v10M36 26v10H26M14 36H4V26" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"/>
+        <rect x="12" y="13" width="16" height="10" rx="2" fill="currentColor"/>
+        <text x="20" y="21" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">#7</text>
+      </svg>
+      <div>
+        <h1>VisionTrack AI</h1>
+        <p>Find objects in video and follow them with ID numbers.</p>
+      </div>
+    </div>
+    <div class="sys" id="sys" role="status">Checking system…</div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel settings" aria-label="Detection settings">
+      <h2>Detection settings</h2>
+
+      <label for="model">Model</label>
+      <select id="model"></select>
+
+      <fieldset>
+        <legend>Mode</legend>
+        <label class="choice"><input type="radio" name="mode" value="track" checked> Detect and track (assigns IDs)</label>
+        <label class="choice"><input type="radio" name="mode" value="detect"> Detect only</label>
+      </fieldset>
+
+      <label for="tracker">Tracker</label>
+      <select id="tracker"></select>
+
+      <label for="preset">Objects to find</label>
+      <select id="preset"></select>
+
+      <label for="conf">Confidence threshold <output id="confOut">0.35</output></label>
+      <input type="range" id="conf" min="0.1" max="0.9" step="0.05" value="0.35">
+      <p class="hint">Higher = fewer, more certain detections. Lower = more detections, more mistakes.</p>
+
+      <label class="choice"><input type="checkbox" id="trails" checked> Draw movement trails</label>
+
+      <p class="hint">Model, mode, tracker and objects apply the next time you start. The confidence slider also updates a running webcam.</p>
+    </aside>
+
+    <section class="work">
+      <div class="tabs" role="tablist" aria-label="Input source">
+        <button class="tab active" id="tab-video" role="tab" aria-selected="true" aria-controls="panel-video">Video file</button>
+        <button class="tab" id="tab-webcam" role="tab" aria-selected="false" aria-controls="panel-webcam">Webcam</button>
+      </div>
+
+      <div class="alert" id="alert" role="alert" hidden></div>
+
+      <!-- VIDEO FILE -->
+      <div id="panel-video" role="tabpanel" aria-labelledby="tab-video">
+        <div class="stage" id="videoStage">
+          <video id="outVideo" controls playsinline hidden></video>
+          <img id="preview" alt="Live preview of the frame being processed" hidden>
+          <p class="empty" id="videoEmpty">Choose a video below. The processed result appears here with boxes, labels and IDs.</p>
+        </div>
+
+        <div class="bar" id="progressWrap" hidden>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressTrack"><span id="progressFill"></span></div>
+          <p id="progressText" aria-live="polite"></p>
+        </div>
+
+        <div class="controls">
+          <label class="drop" id="drop" for="file">
+            <input type="file" id="file" accept=".mp4,.avi,.mov,.mkv,.webm,video/*">
+            <span id="fileName">Choose a video file or drop it here</span>
+            <small id="fileHint"></small>
+          </label>
+          <div class="buttons">
+            <button class="btn primary" id="processBtn">Process video</button>
+            <button class="btn" id="cancelBtn" hidden>Cancel</button>
+            <a class="btn" id="downloadBtn" href="#" hidden>Download result</a>
+          </div>
+        </div>
+
+        <div id="summary" class="summary" hidden></div>
+      </div>
+
+      <!-- WEBCAM -->
+      <div id="panel-webcam" role="tabpanel" aria-labelledby="tab-webcam" hidden>
+        <div class="stage" id="camStage">
+          <img id="camFeed" alt="Live webcam feed with detections" hidden>
+          <p class="empty" id="camEmpty">Press Start webcam. The camera is opened by the computer running this app.</p>
+        </div>
+        <div class="controls">
+          <div class="buttons">
+            <button class="btn primary" id="camStart">Start webcam</button>
+            <button class="btn danger" id="camStop" hidden>Stop webcam</button>
+          </div>
+          <p class="stats" id="camStats" aria-live="off"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="notes">
+    <details>
+      <summary>How tracking IDs work, and where they can fail</summary>
+      <p>The detector finds objects in each frame. The tracker then matches today's boxes to the boxes it saw a moment ago and reuses the same ID number. This is a best-effort match, not a guarantee.</p>
+      <ul>
+        <li>An object hidden behind something for long enough can come back with a new ID.</li>
+        <li>People or cars that cross paths or overlap can swap IDs.</li>
+        <li>Fast motion, motion blur, low light and small or distant objects make detection flicker, which breaks tracks.</li>
+        <li>Cuts and camera jumps usually reset tracking.</li>
+        <li>So "unique IDs" in the summary can be higher than the number of real objects.</li>
+      </ul>
+    </details>
+  </section>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

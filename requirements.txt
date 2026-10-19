@@ -1,0 +1,16 @@
+# VisionTrack AI dependencies
+# Python 3.9 - 3.12 recommended.
+flask>=3.0
+opencv-python>=4.8
+numpy>=1.24
+# Provides YOLO11/YOLOv8 and the built-in ByteTrack / BoT-SORT trackers.
+# It installs PyTorch automatically (CPU build by default - see README for GPU).
+ultralytics>=8.3.0
+# ByteTrack/BoT-SORT need a linear-assignment solver. If "lap" fails to install
+# on your platform, use "lapx" instead.
+lap>=0.5.12
+# Bundles an ffmpeg binary so processed videos play in the browser (H.264).
+imageio-ffmpeg>=0.4.9
+
+# Only needed to run the tests:
+pytest>=7.0
